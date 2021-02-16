@@ -18,7 +18,7 @@
 	update_icon()
 
 
-/obj/structure/toilet/attack_hand(mob/living/user)
+/obj/structure/toilet/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
 	if(.)
 		return
@@ -29,7 +29,7 @@
 		log_combat(user, swirlie, "swirlied (brute)")
 		swirlie.adjustBruteLoss(5)
 
-	else if(user.pulling && user.a_intent == INTENT_GRAB && isliving(user.pulling))
+	else if(user.pulling && isliving(user.pulling))
 		user.changeNext_move(CLICK_CD_MELEE)
 		var/mob/living/GM = user.pulling
 		if(user.grab_state >= GRAB_AGGRESSIVE)
@@ -103,21 +103,20 @@
 	else if(I.tool_behaviour == TOOL_WRENCH && !(flags_1&NODECONSTRUCT_1))
 		I.play_tool_sound(src)
 		deconstruct()
-	else if(cistern)
-		if(user.a_intent != INTENT_HARM)
-			if(I.w_class > WEIGHT_CLASS_NORMAL)
-				to_chat(user, "<span class='warning'>[I] does not fit!</span>")
-				return
-			if(w_items + I.w_class > WEIGHT_CLASS_HUGE)
-				to_chat(user, "<span class='warning'>The cistern is full!</span>")
-				return
-			if(!user.transferItemToLoc(I, src))
-				to_chat(user, "<span class='warning'>\The [I] is stuck to your hand, you cannot put it in the cistern!</span>")
-				return
-			w_items += I.w_class
-			to_chat(user, "<span class='notice'>You carefully place [I] into the cistern.</span>")
+	else if(cistern && !user.combat_mode)
+		if(I.w_class > WEIGHT_CLASS_NORMAL)
+			to_chat(user, "<span class='warning'>[I] does not fit!</span>")
+			return
+		if(w_items + I.w_class > WEIGHT_CLASS_HUGE)
+			to_chat(user, "<span class='warning'>The cistern is full!</span>")
+			return
+		if(!user.transferItemToLoc(I, src))
+			to_chat(user, "<span class='warning'>\The [I] is stuck to your hand, you cannot put it in the cistern!</span>")
+			return
+		w_items += I.w_class
+		to_chat(user, "<span class='notice'>You carefully place [I] into the cistern.</span>")
 
-	else if(istype(I, /obj/item/reagent_containers))
+	else if(istype(I, /obj/item/reagent_containers) && !user.combat_mode)
 		if (!open)
 			return
 		if(istype(I, /obj/item/food/monkeycube))
@@ -160,11 +159,11 @@
 	. = ..()
 	hiddenitem = new /obj/item/food/urinalcake
 
-/obj/structure/urinal/attack_hand(mob/user)
+/obj/structure/urinal/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
 	if(.)
 		return
-	if(user.pulling && user.a_intent == INTENT_GRAB && isliving(user.pulling))
+	if(user.pulling && isliving(user.pulling))
 		var/mob/living/GM = user.pulling
 		if(user.grab_state >= GRAB_AGGRESSIVE)
 			if(GM.loc != get_turf(src))
@@ -277,7 +276,7 @@
 	. = ..()
 	. += "<span class='notice'>[reagents.total_volume]/[reagents.maximum_volume] liquids remaining.</span>"
 
-/obj/structure/sink/attack_hand(mob/living/user)
+/obj/structure/sink/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
 	if(.)
 		return
@@ -394,7 +393,7 @@
 	if(O.item_flags & ABSTRACT) //Abstract items like grabs won't wash. No-drop items will though because it's still technically an item in your hand.
 		return
 
-	if(user.a_intent != INTENT_HARM)
+	if(!user.combat_mode)
 		to_chat(user, "<span class='notice'>You start washing [O]...</span>")
 		busy = TRUE
 		if(!do_after(user, 40, target = src))
@@ -481,7 +480,7 @@
 	var/busy = FALSE //Something's being washed at the moment
 	var/dispensedreagent = /datum/reagent/water // for whenever plumbing happens
 
-/obj/structure/water_source/attack_hand(mob/living/user)
+/obj/structure/water_source/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
 	if(.)
 		return
@@ -577,7 +576,7 @@
 	if(O.item_flags & ABSTRACT) //Abstract items like grabs won't wash. No-drop items will though because it's still technically an item in your hand.
 		return
 
-	if(user.a_intent != INTENT_HARM)
+	if(!user.combat_mode)
 		to_chat(user, "<span class='notice'>You start washing [O]...</span>")
 		busy = TRUE
 		if(!do_after(user, 4 SECONDS, target = src))
@@ -600,7 +599,7 @@
 	resistance_flags = UNACIDABLE
 
 //ATTACK HAND IGNORING PARENT RETURN VALUE
-/obj/structure/water_source/puddle/attack_hand(mob/M)
+/obj/structure/water_source/puddle/attack_hand(mob/user, list/modifiers)
 	icon_state = "puddle-splash"
 	. = ..()
 	icon_state = "puddle"
@@ -679,7 +678,7 @@
 	return TRUE
 
 
-/obj/structure/curtain/attack_hand(mob/user)
+/obj/structure/curtain/attack_hand(mob/user, list/modifiers)
 	. = ..()
 	if(.)
 		return
@@ -752,5 +751,5 @@
 	if(opaque_closed)
 		set_opacity(TRUE)
 
-/obj/structure/curtain/cloth/fancy/mechanical/attack_hand(mob/user)
+/obj/structure/curtain/cloth/fancy/mechanical/attack_hand(mob/user, list/modifiers)
 		return
