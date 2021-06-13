@@ -161,27 +161,32 @@ GLOBAL_LIST_EMPTY(lifts)
 
 /obj/structure/industrial_lift/Initialize(mapload)
 	. = ..()
-	RegisterSignal(src, COMSIG_MOVABLE_CROSSED, .proc/AddItemOnLift)
-	RegisterSignal(loc, COMSIG_ATOM_CREATED, .proc/AddItemOnLift)//For atoms created on platform
-	RegisterSignal(src, COMSIG_MOVABLE_UNCROSSED, .proc/RemoveItemFromLift)
+	var/static/list/loc_connections = list(
+		COMSIG_ATOM_EXITED =.proc/UncrossedRemoveItemFromLift,
+		COMSIG_ATOM_ENTERED = .proc/AddItemOnLift,
+		COMSIG_ATOM_CREATED = .proc/AddItemOnLift,
+	)
+	AddElement(/datum/element/connect_loc, src, loc_connections)
 	RegisterSignal(src, COMSIG_MOVABLE_BUMP, .proc/GracefullyBreak)
 
 	if(!lift_master_datum)
 		lift_master_datum = new(src)
 
-/obj/structure/industrial_lift/Move(atom/newloc, direct)
-	UnregisterSignal(loc, COMSIG_ATOM_CREATED)
-	. = ..()
-	RegisterSignal(loc, COMSIG_ATOM_CREATED, .proc/AddItemOnLift)//For atoms created on platform
 
-/obj/structure/industrial_lift/proc/RemoveItemFromLift(datum/source, atom/movable/AM)
-	if(!(AM in lift_load))
+/obj/structure/industrial_lift/proc/UncrossedRemoveItemFromLift(datum/source, atom/movable/potential_rider)
+	SIGNAL_HANDLER
+	RemoveItemFromLift(potential_rider)
+
+/obj/structure/industrial_lift/proc/RemoveItemFromLift(atom/movable/potential_rider)
+	SIGNAL_HANDLER
+	if(!(potential_rider in lift_load))
 		return
-	LAZYREMOVE(lift_load, AM)
-	UnregisterSignal(AM, COMSIG_PARENT_QDELETING)
+	LAZYREMOVE(lift_load, potential_rider)
+	UnregisterSignal(potential_rider, COMSIG_PARENT_QDELETING)
 
 /obj/structure/industrial_lift/proc/AddItemOnLift(datum/source, atom/movable/AM)
-	if(istype(AM, /obj/structure/fluff/tram_rail))
+	SIGNAL_HANDLER
+	if(istype(AM, /obj/structure/fluff/tram_rail) || AM.invisibility == INVISIBILITY_ABSTRACT) //prevents the tram from stealing things like landmarks
 		return
 	if(AM in lift_load)
 		return
@@ -205,7 +210,7 @@ GLOBAL_LIST_EMPTY(lifts)
 		tram_part.travel_distance = 0
 		tram_part.travelling = FALSE
 		if(prob(15) || locate(/mob/living) in tram_part.lift_load) //always go boom on people on the track
-			explosion(get_turf(tram_part),rand(0,1),2,3) //50% chance of gib
+			explosion(tram_part, devastation_range = rand(0,1), heavy_impact_range = 2, light_impact_range = 3) //50% chance of gib
 		qdel(tram_part)
 
 /obj/structure/industrial_lift/proc/lift_platform_expansion(datum/lift_master/lift_master_datum)
@@ -254,11 +259,7 @@ GLOBAL_LIST_EMPTY(lifts)
 			var/atom/throw_target = get_edge_target_turf(collided, turn(going, pick(45, -45)))
 			collided.throw_at(throw_target, 200, 4)
 	forceMove(destination)
-	for(var/am in things2move)
-		if(isnull(am))
-			LAZYREMOVE(lift_load, am)//after enough use, one of these always ends up inside despite signals. when they show, we need to scrub them out.
-			continue
-		var/atom/movable/thing = am
+	for(var/atom/movable/thing as anything in things2move)
 		thing.forceMove(destination)
 
 /obj/structure/industrial_lift/proc/use(mob/living/user)
@@ -299,7 +300,7 @@ GLOBAL_LIST_EMPTY(lifts)
 		return FALSE
 	return TRUE
 
-/obj/structure/industrial_lift/attack_hand(mob/user)
+/obj/structure/industrial_lift/attack_hand(mob/user, list/modifiers)
 	. = ..()
 	if(.)
 		return
@@ -313,7 +314,7 @@ GLOBAL_LIST_EMPTY(lifts)
 	if(isAdminGhostAI(user))
 		use(user)
 
-/obj/structure/industrial_lift/attack_paw(mob/user)
+/obj/structure/industrial_lift/attack_paw(mob/user, list/modifiers)
 	return use(user)
 
 /obj/structure/industrial_lift/attackby(obj/item/W, mob/user, params)
@@ -404,35 +405,50 @@ GLOBAL_LIST_EMPTY(lifts)
 	//kind of a centerpiece of the station, so pretty tough to destroy
 	armor = list(MELEE = 80, BULLET = 80, LASER = 80, ENERGY = 80, BOMB = 100, BIO = 80, RAD = 80, FIRE = 100, ACID = 100)
 	resistance_flags = FIRE_PROOF | ACID_PROOF
+	///set by the tram control console in late initialize
 	var/travelling = FALSE
 	var/travel_distance = 0
 	///for finding the landmark initially - should be the exact same as the landmark's destination id.
 	var/initial_id = "middle_part"
 	var/obj/effect/landmark/tram/from_where
 	var/travel_direction
-	var/time_inbetween_moves = 1
+
+GLOBAL_DATUM(central_tram, /obj/structure/industrial_lift/tram/central)
+
+/obj/structure/industrial_lift/tram/Initialize(mapload)
+	. = ..()
+	return INITIALIZE_HINT_LATELOAD
 
 /obj/structure/industrial_lift/tram/central//that's a surprise tool that can help us later
+
+/obj/structure/industrial_lift/tram/central/Initialize(mapload)
+	if(GLOB.central_tram)
+		return INITIALIZE_HINT_QDEL
+
+	. = ..()
+
+	SStramprocess.can_fire = TRUE
+	GLOB.central_tram = src
 
 /obj/structure/industrial_lift/tram/LateInitialize()
 	. = ..()
 	find_our_location()
 
-/obj/structure/industrial_lift/tram/proc/find_our_location()
-	if(!from_where)
-		for(var/obj/effect/landmark/tram/our_location in GLOB.landmarks_list)
-			if(our_location.destination_id == initial_id)
-				from_where = our_location
-				break
 
-/obj/structure/industrial_lift/tram/central/find_our_location() //the tram knows where it is by knowing where it isn't
-	..()
-	for(var/location in lift_master_datum.lift_platforms)
-		var/obj/structure/industrial_lift/tram/tram_location = location
-		var/turf/turf = get_turf(src)
-		var/where_we_are = locate(/obj/effect/landmark/tram) in turf.contents
-		if(where_we_are)
-			tram_location.from_where = where_we_are //this gets set by the tram movement too but this actually makes sure we're at the dock we were moved to to prevent blender mode
+/**
+ * Finds the location of the tram
+ *
+ * The initial_id is assumed to the be the landmark the tram is built on in the map
+ * and where the tram will set itself to be on roundstart.
+ * The central tram piece goes further into this by actually checking the contents of the turf its on
+ * for a tram landmark when it docks anywhere. This assures the tram actually knows where it is after docking,
+ * even in the worst cast scenario.
+ */
+/obj/structure/industrial_lift/tram/proc/find_our_location()
+	for(var/obj/effect/landmark/tram/our_location as anything in GLOB.tram_landmarks)
+		if(our_location.destination_id == initial_id)
+			from_where = our_location
+			break
 
 /obj/structure/industrial_lift/tram/use(mob/user) //dont click the floor dingus we use computers now
 	return
@@ -445,30 +461,48 @@ GLOBAL_LIST_EMPTY(lifts)
 		travel_distance--
 		lift_master_datum.MoveLiftHorizontal(travel_direction, z)
 
-/obj/structure/industrial_lift/tram/proc/tram_travel(obj/effect/landmark/tram/from_where, obj/effect/landmark/tram/to_where)
+/**
+ * Handles moving the tram
+ *
+ * Tells the individual tram parts where to actually go and has an extra safety check
+ * incase multiple inputs get through, preventing conflicting directions and the tram
+ * literally ripping itself apart. The proc handles the first move before the subsystem
+ * takes over to keep moving it in process()
+ */
+/obj/structure/industrial_lift/tram/proc/tram_travel(obj/effect/landmark/tram/to_where)
+	if(to_where == from_where)
+		return
+
 	visible_message("<span class='notice'>[src] has been called to the [to_where]!</span")
 
 	lift_master_datum.set_controls(LOCKED)
+	travel_direction = get_dir(from_where, to_where)
+	travel_distance = get_dist(from_where, to_where)
+	//first movement is immediate
 	for(var/obj/structure/industrial_lift/tram/other_tram_part as anything in lift_master_datum.lift_platforms) //only thing everyone needs to know is the new location.
 		if(other_tram_part.travelling) //wee woo wee woo there was a double action queued. damn multi tile structs
 			return //we don't care to undo locked controls, though, as that will resolve itself
 		other_tram_part.travelling = TRUE
 		other_tram_part.from_where = to_where
-	travel_direction = get_dir(from_where, to_where)
-	travel_distance = get_dist(from_where, to_where)
-	//first movement is immediate
 	lift_master_datum.MoveLiftHorizontal(travel_direction, z)
 	travel_distance--
 
 	START_PROCESSING(SStramprocess, src)
 
+/**
+ * Handles unlocking the tram controls for use after moving
+ *
+ * More safety checks to make sure the tram has actually docked properly
+ * at a location before users are allowed to interact with the tram console again.
+ * Tram finds its location at this point before fully unlocking controls to the user.
+ */
 /obj/structure/industrial_lift/tram/proc/unlock_controls()
 	visible_message("<span class='notice'>[src]'s controls are now unlocked.</span")
-	for(var/lift in lift_master_datum.lift_platforms) //only thing everyone needs to know is the new location.
-		var/obj/structure/industrial_lift/tram/other_tram_part = lift
-		other_tram_part.travelling = FALSE
-		other_tram_part.find_our_location()
+	for(var/obj/structure/industrial_lift/tram/tram_part as anything in lift_master_datum.lift_platforms) //only thing everyone needs to know is the new location.
+		tram_part.travelling = FALSE
 		lift_master_datum.set_controls(UNLOCKED)
+
+GLOBAL_LIST_EMPTY(tram_landmarks)
 
 /obj/effect/landmark/tram
 	name = "tram destination" //the tram buttons will mention this.
@@ -476,6 +510,15 @@ GLOBAL_LIST_EMPTY(lifts)
 	var/destination_id
 	///icons for the tgui console to list out for what is at this location
 	var/list/tgui_icons = list()
+
+/obj/effect/landmark/tram/Initialize()
+	. = ..()
+	GLOB.tram_landmarks += src
+
+/obj/effect/landmark/tram/Destroy()
+	GLOB.tram_landmarks -= src
+	return ..()
+
 
 /obj/effect/landmark/tram/left_part
 	name = "West Wing"
@@ -490,4 +533,4 @@ GLOBAL_LIST_EMPTY(lifts)
 /obj/effect/landmark/tram/right_part
 	name = "East Wing"
 	destination_id = "right_part"
-	tgui_icons = list("Departures" = "plane-departure", "Cargo" = "box")
+	tgui_icons = list("Departures" = "plane-departure", "Cargo" = "box", "Science" = "flask")
