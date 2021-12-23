@@ -6,7 +6,7 @@
 #define HIDDEN_SCANNER	(1<<0)
 #define HIDDEN_PANDEMIC	(1<<1)
 
-//Disease Flags
+//Disease Flags hehe 
 #define CURABLE		(1<<0)
 #define CAN_CARRY	(1<<1)
 #define CAN_RESIST	(1<<2)
