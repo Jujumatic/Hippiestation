@@ -300,9 +300,18 @@
 	name = "Freezer (Machine Board)"
 	build_path = PATH_FREEZER
 
-#undef PATH_FREEZER
-#undef PATH_HEATER
+#define PATH_FREEZER /obj/machinery/atmospherics/components/unary/thermomachine/freezer
+#define PATH_HEATER  /obj/machinery/atmospherics/components/unary/thermomachine/heater
 
+/obj/item/circuitboard/machine/thermomachine/Initialize()
+	. = ..()
+	if(!build_path)
+		if(prob(50))
+			name = "Freezer (Machine Board)"
+			build_path = PATH_FREEZER
+		else
+			name = "Heater (Machine Board)"
+			build_path = PATH_HEATER
 //Generic
 
 /obj/item/circuitboard/machine/circuit_imprinter
