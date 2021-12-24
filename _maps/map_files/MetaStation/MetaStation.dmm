@@ -73420,7 +73420,6 @@
 /obj/structure/cable,
 /turf/open/floor/grass,
 /area/medical/virology)
-"uFw" = (
 /obj/effect/turf_decal/stripes/line{
 	dir = 1
 	},
@@ -73432,28 +73431,6 @@
 	},
 /obj/machinery/light{
 	dir = 4
-	},
-/obj/structure/table/glass,
-/obj/item/folder/red{
-	pixel_y = 3
-	},
-/obj/effect/turf_decal/tile/red,
-/obj/effect/turf_decal/tile/red{
-	dir = 4
-	},
-/turf/open/floor/iron/dark,
-/area/command/bridge)
-"uFF" = (
-/obj/machinery/air_sensor/atmos/nitrous_tank,
-/turf/open/floor/engine/n2o,
-/area/engineering/atmos)
-"uFV" = (
-/obj/effect/turf_decal/trimline/blue/filled/line,
-/obj/effect/turf_decal/trimline/blue/filled/corner{
-	dir = 4
-	},
-/obj/item/kirbyplants/random,
-/turf/open/floor/iron/white,
 /area/medical/treatment_center)
 "uFZ" = (
 /obj/machinery/nanite_programmer,
@@ -121765,7 +121742,7 @@ alq
 oCR
 bWZ
 apc
-qYi
+bph
 bZE
 aaX
 adk
@@ -122017,9 +121994,9 @@ bLZ
 bLW
 bNN
 bPj
-pqR
+bSd
 alq
-bPn
+nhw
 bXa
 aPE
 bZE
@@ -122271,7 +122248,7 @@ jMk
 jMk
 atm
 aqr
-kWX
+lVD
 vcS
 apc
 rWp
@@ -122530,7 +122507,7 @@ atm
 bLX
 bPk
 bQQ
-pNI
+bSe
 bTh
 bUx
 aut
@@ -122788,7 +122765,7 @@ bLY
 bPl
 apc
 aqq
-rID
+kww
 bUy
 alq
 bXd
@@ -123041,10 +123018,10 @@ iOc
 jww
 lFw
 atm
-kbp
+mgO
 bPm
-kWX
-rBn
+lVD
+bSf
 bVE
 jMk
 jMk
@@ -123298,10 +123275,10 @@ fVO
 wZH
 aPb
 atm
-fdP
-oca
+cTw
+bPn
 bQR
-pqR
+bSd
 anM
 jMk
 gma
