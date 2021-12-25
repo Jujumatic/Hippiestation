@@ -49,6 +49,22 @@ GLOBAL_LIST_INIT(nonreactive_gases, typecacheof(list(/datum/gas/oxygen, /datum/g
 	var/dangerous = FALSE //currently used by canisters
 	var/fusion_power = 0 //How much the gas accelerates a fusion reaction
 	var/rarity = 0 // relative rarity compared to other gases, used when setting up the reactions list.
+datum/gas/helium
+	id = "helium"
+	specific_heat = 15
+	name = "Helium"
+	fusion_power = 7
+	rarity = 50
+
+/datum/gas/antinoblium
+	id = "antinoblium"
+	specific_heat = 1
+	name = "Antinoblium"
+	dangerous = TRUE
+	gas_overlay = "antinoblium"
+	moles_visible = MOLES_GAS_VISIBLE
+	fusion_power = 20
+	rarity = 1
 
 /datum/gas/oxygen
 	id = "o2"
