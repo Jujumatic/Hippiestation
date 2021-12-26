@@ -404,6 +404,20 @@ NOTE: there are two lists of areas in the end of this file: centcom and station 
 	name = "Upper Central Primary Hallway"
 	icon_state = "hallC"
 
+/area/hallway/primary/tram
+	name = "Primary Tram"
+
+/area/hallway/primary/tram/left
+	name = "Port Tram Dock"
+	icon_state = "halltramL"
+
+/area/hallway/primary/tram/center
+	name = "Central Tram Dock"
+	icon_state = "halltramM"
+
+/area/hallway/primary/tram/right
+	name = "Starboard Tram Dock"
+	icon_state = "halltramR"
 
 /area/hallway/secondary/command
 	name = "Command Hallway"
