@@ -123,8 +123,6 @@
 								/datum/gas/healium,
 								/datum/gas/proto_nitrate,
 								/datum/gas/zauker,
-								/datum/gas/helium,
-								/datum/gas/antinoblium,
 								/datum/gas/halon
 								)
 
@@ -139,8 +137,6 @@
 								/datum/gas/healium = 19,
 								/datum/gas/proto_nitrate = 5,
 								/datum/gas/zauker = 1050,
-								/datum/gas/helium = 6,
-								/datum/gas/antinoblium = 10,
 								/datum/gas/halon = 9
 								)
 
