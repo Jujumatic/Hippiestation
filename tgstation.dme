@@ -3376,3 +3376,13 @@
 #include "interface\stylesheet.dm"
 #include "interface\skin.dmf"
 // END_INCLUDE
+
+
+
+
+//Hippie code tards
+
+#include "hippiestation\code\modules\mob\living\carbon\human\species.dm"
+#include "hippiestation\code\modules\judaism\foreskin.dm"
+#include "hippiestation\code\modules\judaism\rabbi.dm"
+#include "hippiestation\code\modules\judaism\sacrifice.dm"

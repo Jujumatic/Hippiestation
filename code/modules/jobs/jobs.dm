@@ -47,8 +47,8 @@ GLOBAL_LIST_INIT(service_positions, list(
 	"Clown",
 	"Mime",
 	"Prisoner",
-	"Assistant"))
-
+	"Assistant",
+	"Rabbi",))
 
 GLOBAL_LIST_INIT(security_positions, list(
 	"Head of Security",

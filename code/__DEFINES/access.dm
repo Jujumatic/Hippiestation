@@ -61,6 +61,7 @@
 #define ACCESS_CE 56
 #define ACCESS_HOP 57
 #define ACCESS_HOS 58
+#define ACCESS_SYNAGOGUE 69 //PP station 13 was here
 /// Request console announcements
 #define ACCESS_RC_ANNOUNCE 59
 /// Used for events which require at least two people to confirm them

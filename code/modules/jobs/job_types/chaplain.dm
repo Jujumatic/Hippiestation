@@ -73,7 +73,7 @@
 		if("islam")
 			B.name = "Quran"
 		if("judaism")
-			B.name = "The Torah"
+			B.name = "The Torah, Believer of Jewbacca"
 		if("lampism")
 			B.name = "Fluorescent Incandescence"
 		if("lol", "wtf", "gay", "penis", "ass", "poo", "badmin", "shitmin", "deadmin", "cock", "cocks", "meme", "memes")
@@ -104,7 +104,7 @@
 		if("toolboxia","greytide")
 			B.name = pick("Toolbox Manifesto","iGlove Assistants")
 		if("weeaboo","kawaii")
-			B.name = pick("Fanfiction Compendium","Japanese for Dummies","The Manganomicon","Establishing Your O.T.P")
+			B.name = pick("Disgusting furry fags", "Fanfiction Compendium","Japanese for Dummies","The Manganomicon","Establishing Your O.T.P")
 		else
 			B.name = "The Holy Book of [new_religion]"
 
@@ -135,3 +135,4 @@
 	satchel = /obj/item/storage/backpack/cultpack
 
 	chameleon_extras = /obj/item/stamp/chap
+/datum/job/rabbi //PP 13 GANG

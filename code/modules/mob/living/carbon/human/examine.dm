@@ -129,6 +129,9 @@
 	if(get_bodypart(BODY_ZONE_HEAD) && !getorgan(/obj/item/organ/brain))
 		. += "<span class='deadsay'>It appears that [t_his] brain is missing...</span>"
 
+	if(!getorgan(/obj/item/organ/foreskin) && gender == "male" && !(w_uniform || wear_suit))
+		msg += "<span class='deadsay'>[t_He] appears to be circumcised...</span>\n"
+
 	var/temp = getBruteLoss() //no need to calculate each of these twice
 
 	var/list/msg = list()
