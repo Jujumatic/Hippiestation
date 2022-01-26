@@ -425,7 +425,8 @@
 		/datum/crafting_recipe/food/berrytart,
 		/datum/crafting_recipe/food/cocolavatart,
 		/datum/crafting_recipe/food/clowncake,
-		/datum/crafting_recipe/food/vanillacake
+		/datum/crafting_recipe/food/vanillacake,
+		/datum/crafting_recipe/knifeboxing
 	)
 	icon_state = "cooking_learing_sweets"
 	oneuse = FALSE

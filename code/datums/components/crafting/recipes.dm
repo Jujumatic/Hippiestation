@@ -61,6 +61,15 @@
 	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
 
+/datum/crafting_recipe/knifeboxing
+	name = "Knife-boxing Gloves"
+	result = /obj/item/clothing/gloves/knifeboxing
+	reqs = list(/obj/item/clothing/gloves/boxing = 1,
+				/obj/item/kitchen/knife = 2)
+	time = 100
+	category = CAT_WEAPONRY
+	always_availible = FALSE
+
 /datum/crafting_recipe/strobeshield/New()
 	..()
 	blacklist |= subtypesof(/obj/item/shield/riot/)
