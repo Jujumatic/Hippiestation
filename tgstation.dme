@@ -3380,5 +3380,5 @@
 // END_INCLUDE
 
 //hippie
- #include "code\modules\clothing\gloves\knifeboxing.dm"
-  #include "code\datums\martial\knifeboxing.dm"
+#include "code\modules\clothing\gloves\knifeboxing.dm"
+#include "code\datums\martial\knifeboxing.dm"

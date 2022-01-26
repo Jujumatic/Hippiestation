@@ -500,6 +500,8 @@
 		if(L.heal_damage(heal_amt/parts.len, heal_amt/parts.len, null, BODYPART_ORGANIC))
 			M.update_damage_overlays()
 	return 1
+
+
 //ports from hippie
 
 /datum/symptom/heal/burn
@@ -521,7 +523,7 @@
 
 	var/list/parts = M.get_damaged_bodyparts(1,1) //1,1 because it needs inputs.
 
-if(!parts.len)
+	if(!parts.len)
 		return
 
 	for(var/obj/item/bodypart/L in parts)
