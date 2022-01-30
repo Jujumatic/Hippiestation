@@ -20151,7 +20151,6 @@
 	},
 /obj/item/storage/box/shipping{
 	pixel_x = 4;
-	pixel_z = 4
 	},
 /turf/open/floor/plasteel,
 /area/quartermaster/sorting)
