@@ -3382,3 +3382,6 @@
 
 //Hippie code tards
 
+#include "code\modules\judaism\foreskin.dm"
+#include "code\modules\judaism\rabbi.dm"
+#include "code\modules\judaism\sacrifice.dm"
