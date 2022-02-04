@@ -182,6 +182,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/obj/item/organ/appendix/mutantappendix = /obj/item/organ/appendix
 	///Forces an item into this species' hands. Only an honorary mutantthing because this is not an organ and not loaded in the same way, you've been warned to do your research.
 	var/obj/item/mutanthands
+
 	///Bitflag that controls what in game ways something can select this species as a spawnable source, such as magic mirrors. See [mob defines][code/__DEFINES/mobs.dm] for possible sources.
 	var/changesource_flags = NONE
 
@@ -279,13 +280,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
  */
 /datum/species/proc/regenerate_organs(mob/living/carbon/C,datum/species/old_species,replace_current=TRUE,list/excluded_zones)
 	//what should be put in if there is no mutantorgan (brains handled seperately)
+	var/obj/item/organ/foreskin/foreskin = C.getorganslot(ORGAN_SLOT_FORESKIN)
 	var/list/slot_mutantorgans = list(ORGAN_SLOT_BRAIN = mutantbrain, ORGAN_SLOT_HEART = mutantheart, ORGAN_SLOT_LUNGS = mutantlungs, ORGAN_SLOT_APPENDIX = mutantappendix, \
 	ORGAN_SLOT_EYES = mutanteyes, ORGAN_SLOT_EARS = mutantears, ORGAN_SLOT_TONGUE = mutanttongue, ORGAN_SLOT_LIVER = mutantliver, ORGAN_SLOT_STOMACH = mutantstomach)
-
-	for(var/slot in list(ORGAN_SLOT_BRAIN, ORGAN_SLOT_HEART, ORGAN_SLOT_LUNGS, ORGAN_SLOT_APPENDIX, \
-	ORGAN_SLOT_EYES, ORGAN_SLOT_EARS, ORGAN_SLOT_TONGUE, ORGAN_SLOT_LIVER, ORGAN_SLOT_STOMACH))
-		var/obj/item/organ/foreskin/foreskin = C.getorganslot(ORGAN_SLOT_FORESKIN)
-		var/should_have_foreskin = FALSE
+	var/should_have_foreskin = FALSE
 
 	if(C.gender == MALE)
 		should_have_foreskin = TRUE
@@ -296,6 +294,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(should_have_foreskin && !foreskin)
 		foreskin = new()
 		foreskin.Insert(C)
+
+	for(var/slot in list(ORGAN_SLOT_BRAIN, ORGAN_SLOT_HEART, ORGAN_SLOT_LUNGS, ORGAN_SLOT_APPENDIX, \
+	ORGAN_SLOT_EYES, ORGAN_SLOT_EARS, ORGAN_SLOT_TONGUE, ORGAN_SLOT_LIVER, ORGAN_SLOT_STOMACH))
 
 		var/obj/item/organ/oldorgan = C.getorganslot(slot) //used in removing
 		var/obj/item/organ/neworgan = slot_mutantorgans[slot] //used in adding
