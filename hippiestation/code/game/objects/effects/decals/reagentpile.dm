@@ -29,10 +29,12 @@
 			for(var/obj/item/I in M.get_equipped_items())
 				if(I.body_parts_covered & CHEST)
 					protection = I.permeability_coefficient + 0.5
+					break
 				else
 					protection = 2
-		else
+		else	//assume they're standing otherwise
 			for(var/obj/item/I in M.get_equipped_items())
-				if(I.body_parts_covered & CHEST)
+				if(I.body_parts_covered & FEET)
 					protection = I.permeability_coefficient
+					break
 		reagents.trans_to(M, 2, protection)	//this amount will be removed from the reagentpile
